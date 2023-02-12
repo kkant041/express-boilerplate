@@ -1,4 +1,5 @@
 import express from 'express';
+import { RawData } from 'ws';
 import authRoute from './auth.route';
 import userRoute from './user.route';
 import docsRoute from './docs.route';
@@ -35,5 +36,25 @@ if (config.env === 'development') {
     router.use(route.path, route.route);
   });
 }
+
+interface SocketMessageReceived {
+  path: string;
+  id: string;
+  audio: string; // base64 string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const socketRouter = (message: RawData, ws: WebSocket) => {
+  const data: SocketMessageReceived = JSON.parse(message.toString());
+  switch (data.path) {
+    case 'case1':
+      console.log('invoke the controller here for case1');
+      break;
+
+    default:
+      console.log('invoke the controller here for default case');
+      break;
+  }
+};
 
 export default router;

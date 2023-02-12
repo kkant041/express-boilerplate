@@ -1,5 +1,6 @@
 import { Server } from 'http';
 import mongoose from 'mongoose';
+import { WebSocketServer } from 'ws';
 import app from './app';
 import config from './config/config';
 import logger from './config/logger';
@@ -9,6 +10,12 @@ mongoose.connect(config.mongoose.url, config.mongoose.options, () => {
   logger.info('Connected to MongoDB');
   server = app.listen(config.port, () => {
     logger.info(`Listening to port ${config.port}`);
+  });
+  const wss = new WebSocketServer({ server });
+  wss.on('connection', (ws, req) => {
+    ws.on('message', (message) => {
+      socketRouter(message, ws);
+    });
   });
 });
 
